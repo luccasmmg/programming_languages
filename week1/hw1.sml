@@ -64,15 +64,15 @@ fun month_range(d: int, d': int) =
     else what_month(d) :: month_range(d + 1, d')
 
 fun oldest(xs: (int * int * int) list) =
-    let fun iter(current: (int * int * int), xs: (int * int * int) list) =
+    if null xs
+    then NONE
+    else
+      let
+        fun iter (current: int, xs: list) =
             if null xs
             then current
             else
-              if is_older(current, hd xs)
-              then iter(current, tl xs)
-              else iter(hd xs, tl xs)
+              if is_olderl
     in
-      if null xs
-      then NONE
-      else SOME (iter(hd xs, tl xs))
+      SOME (oldest_nomempty xs)
     end
