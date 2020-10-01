@@ -2,6 +2,7 @@
 (* These are basic test cases. Passing these tests does not guarantee that your code will pass the actual homework grader *)
 (* To run the test, add a new line to the top of this file: use "homeworkname.sml"; *)
 (* All the tests should evaluate to true. For example, the REPL should say: val test1 = true : bool *)
+use "hw3provided.sml";
 
 val test1 = only_capitals ["A","B","C"] = ["A","B","C"]
 
@@ -29,7 +30,6 @@ val test9c = count_some_var ("x", Variable("x")) = 1
 
 val test10 = check_pat (Variable("x")) = true
 
-val test11 = match (Const(1), UnitP) = NONE
+(* val test11 = match (Const(1), UnitP) = NONE *)
 
-val test12 = first_match Unit [UnitP] = SOME []
-
+(* val test12 = first_match Unit [UnitP] = SOME [] *)

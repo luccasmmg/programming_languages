@@ -50,8 +50,8 @@ val longest_capitalized = longest_string1 o only_capitals
 
 val rev_string = implode o rev o explode
 
-fun first_anwser f = (fn x => case x of SOME(SOME x) => x
-                                      | NONE => raise NoAnswer) o List.find isSome o List.map f
+fun first_answer f = (fn x => case x of SOME(SOME x) => x
+                                      | _ => raise NoAnswer) o List.find isSome o List.map f
 
 fun all_answers f xs =
     let fun aux(f, [], acc) = SOME acc
@@ -61,3 +61,34 @@ fun all_answers f xs =
     in
       aux(f, xs, [])
     end
+
+val count_wildcards = g (fn () => 1) (fn x => 0)
+
+val count_wild_and_variable_lengths = g (fn () => 1) (fn x => String.size x)
+
+fun count_some_var (str, pattern) = g (fn () => 0) (fn x => if x=str then 1 else 0) pattern
+
+fun check_pat pattern =
+    let fun aux(Variable x) = [x]
+          | aux (Wildcard) = []
+          | aux (TupleP ps) = List.foldl(fn (p,i) => (aux p) @ i) [] ps
+          | aux (ConstructorP(_, p)) = aux p
+          | aux _ = []
+        fun all_unique [] = true
+          | all_unique (x::xs) = case List.exists (fn y => y=x) xs of
+                                   true => false
+                                  | false => all_unique(xs)
+    in
+      all_unique(aux pattern)
+    end
+
+fun match (_, Wildcard) = SOME []
+  | match (v, Variable s) = SOME [(s, v)]
+  | match (Unit, UnitP) = SOME []
+  | match (Const i, ConstP i') = if i=i' then SOME [] else NONE
+  | match (Tuple vs, TupleP ps) = if List.length vs = List.length ps then all_answers (fn x => match x) (ListPair.zip (vs, ps)) else NONE
+  | match (Constructor(s,v), ConstructorP(s',p)) = if s=s' then match(v,p) else NONE
+  | match _ = NONE
+
+fun first_match p xs = first_answer (fn x => case match(p, x) of SOME y => SOME(SOME y)
+                                                              | NONE => NONE) xs handle NoAnswer => NONE
